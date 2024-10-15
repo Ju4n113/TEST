@@ -14,7 +14,7 @@ const tareasCognitivas = {
 
         contenedor.innerHTML = `
             <h2>Instrucciones</h2>
-            <p class="pregunta">Se realizará una tarea de memoria y luego un test de Stroop mientras se escucha música.</p>
+            <p class="pregunta">Se realizará una tarea de memoria y luego un test de Stroop mientras se escucha un estímulo sonoro.</p>
             <button id="btn-iniciar">Comenzar</button>
         `;
 
@@ -26,7 +26,7 @@ const tareasCognitivas = {
 
     mostrarInstruccionesMemoria: function (contenedor, version, callback) {  // Agregar el callback aquí
         contenedor.innerHTML = `
-            <h2>Tarea de Memoria (Versión ${version})</h2>
+            <h2>Tarea de Memoria (Versión ${version}/3)</h2>
             <p class="pregunta">Memoriza las palabras que aparecerán en la pantalla. Habrá un tiempo limitado para recordar.</p>
             <button id="btn-comenzar-memoria">Comenzar Tarea de Memoria</button>
         `;
@@ -56,7 +56,7 @@ const tareasCognitivas = {
 
     mostrarInstruccionesStroop: function (contenedor, version, callback) {  // Asegurarse de incluir el callback
         contenedor.innerHTML = `
-            <h2>Tarea de Stroop (Versión ${version})</h2>
+            <h2>Tarea de Stroop (Versión ${version}/3)</h2>
             <p class="pregunta">En esta tarea, deberás indicar el color de la fuente en la que aparece cada palabra, no la palabra escrita. Puedes presionar Enter para enviar tu respuesta una vez que hayas escrito el color. ¡Buena suerte!</p>
             <button id="btn-comenzar-stroop">Comenzar Tarea de Stroop</button>
         `;

@@ -90,6 +90,24 @@ const questionarioCBP = {
             callback('preguntasEstimulo'); // Finaliza el test y prepara el siguiente módulo
         }
 
+        function mostrarInstruccionInicial() {
+            contenedor.innerHTML = `
+                <h2>Test de Personalidad</h2>
+                <p class="pregunta">Lea atentamente cada una de las oraciones que describen eventos, intereses y actitudes de la vida cotidiana, 
+                responda seleccionando solo una de las opciones, lo más espontáneo posible de acuerdo a la siguiente escala:</p>
+                <ul>
+                    <li>Nunca</li>
+                    <li>Casi nunca</li>
+                    <li>A veces</li>
+                    <li>Casi siempre</li>
+                    <li>Siempre</li>
+                </ul>
+                <button id="btn-iniciar">Comenzar</button>
+            `;
+
+            document.getElementById("btn-iniciar").addEventListener("click", mostrarPregunta);
+        }
+
         function mostrarPregunta() {
             const respuestaAnterior = respuestas[indicePregunta]; // Obtener la respuesta previa si existe
             contenedor.innerHTML = `
@@ -108,7 +126,6 @@ const questionarioCBP = {
                     <button id="btn-siguiente">Siguiente</button>
                 </div>
             `;
-
 
             const btnSiguiente = document.getElementById("btn-siguiente");
             const btnAnterior = document.getElementById("btn-anterior");
@@ -141,6 +158,6 @@ const questionarioCBP = {
             });
         }
 
-        mostrarPregunta();
+        mostrarInstruccionInicial(); // Mostrar la instrucción al iniciar
     }
 };
