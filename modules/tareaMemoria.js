@@ -14,7 +14,7 @@ const tareaMemoria = {
 //     },
     iniciar: function (contenedor, version, siguienteFuncion) {
         contenedor.innerHTML = `
-            <h2>Tarea Memoria ${version}:</h2>
+            <h2>Tarea Memoria:</h2>
             <div id="label-palabra"></div>
             <textarea id="cuadro-respuesta" rows="5" cols="40" style="display: none;" placeholder="Escribe aquí tus respuestas... (Presiona Escape si no recuerdas)"></textarea>
             <button id="btn-enviar" style="display: none;" disabled>Enviar respuestas</button>

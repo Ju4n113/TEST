@@ -2,15 +2,20 @@ const tareasCognitivas = {
     respuestasMemoria: {},
     respuestasStroop: {},
     audio: new Audio(),
-    
+    versionesOrdenadas: [],
+
     cargar: function (contenedor, callback) {
-        this.mostrarInstrucciones(contenedor, 1, callback);
+        // Generar un orden aleatorio de las versiones (1, 2, 3)
+        this.versionesOrdenadas = [1, 2, 3].sort(() => Math.random() - 0.5);
+        this.mostrarInstrucciones(contenedor, 0, callback);  // Iniciar con la primera versión en el orden aleatorio
     },
 
-    mostrarInstrucciones: function (contenedor, version, callback) {
-        if (version > 1) {
+    mostrarInstrucciones: function (contenedor, indiceVersion, callback) {
+        if (indiceVersion > 0) {
             this.audio.pause();
         }
+
+        const version = this.versionesOrdenadas[indiceVersion];
 
         contenedor.innerHTML = `
             <h2>Instrucciones</h2>
@@ -20,19 +25,21 @@ const tareasCognitivas = {
 
         document.getElementById("btn-iniciar").addEventListener("click", () => {
             this.iniciarMusica(version);
-            this.mostrarInstruccionesMemoria(contenedor, version, callback);  // Asegurarse de pasar el callback aquí
+            this.mostrarInstruccionesMemoria(contenedor, indiceVersion, callback);  // Pasar el índice de la versión en lugar de la versión directamente
         });
     },
 
-    mostrarInstruccionesMemoria: function (contenedor, version, callback) {  // Agregar el callback aquí
+    mostrarInstruccionesMemoria: function (contenedor, indiceVersion, callback) {
+        const version = this.versionesOrdenadas[indiceVersion];
+
         contenedor.innerHTML = `
-            <h2>Tarea de Memoria (Versión ${version}/3)</h2>
-            <p class="pregunta">Memoriza las palabras que aparecerán en la pantalla. Habrá un tiempo limitado para recordar.</p>
+            <h2>Tarea de Memoria</h2>
+            <p class="pregunta">Memoriza las palabras que aparecerán en la pantalla. Habrá un tiempo limitado para recordar. Al finalizar escribe todas las palabras que recuerdes separadas por espacio o por comas, no importa el orden.</p>
             <button id="btn-comenzar-memoria">Comenzar Tarea de Memoria</button>
         `;
 
         document.getElementById("btn-comenzar-memoria").addEventListener("click", () => {
-            this.iniciarTareaMemoria(contenedor, version, callback);  // Pasar el callback
+            this.iniciarTareaMemoria(contenedor, version, callback);
         });
     },
 
@@ -47,43 +54,41 @@ const tareasCognitivas = {
         this.audio.play();
     },
 
-    iniciarTareaMemoria: function (contenedor, version, callback) {  // Pasar el callback
+    iniciarTareaMemoria: function (contenedor, version, callback) {
         tareaMemoria.iniciar(contenedor, version, (respuestasMemoria) => {
             this.respuestasMemoria[version] = respuestasMemoria;  // Guardar las respuestas de memoria
-            this.mostrarInstruccionesStroop(contenedor, version, callback);  // Pasar el callback aquí también
+            this.mostrarInstruccionesStroop(contenedor, version, callback);
         });
     },
 
-    mostrarInstruccionesStroop: function (contenedor, version, callback) {  // Asegurarse de incluir el callback
+    mostrarInstruccionesStroop: function (contenedor, version, callback) {
         contenedor.innerHTML = `
-            <h2>Tarea de Stroop (Versión ${version}/3)</h2>
-            <p class="pregunta">En esta tarea, deberás indicar el color de la fuente en la que aparece cada palabra, no la palabra escrita. Puedes presionar Enter para enviar tu respuesta una vez que hayas escrito el color. ¡Buena suerte!</p>
+            <h2>Tarea de Stroop</h2>
+            <p class="pregunta">En esta tarea, deberás indicar el color de la fuente en la que aparece cada palabra, no la palabra escrita. 
+            Puedes presionar Enter para enviar tu respuesta una vez que hayas escrito el color. 
+            Intenta escribir la mayor cantidad de respuestas correctas que puedas dentro del tiempo disponible. ¡Buena suerte!</p>
             <button id="btn-comenzar-stroop">Comenzar Tarea de Stroop</button>
         `;
 
         document.getElementById("btn-comenzar-stroop").addEventListener("click", () => {
-            this.iniciarTareaStroop(contenedor, version, callback);  // Pasar el callback
+            this.iniciarTareaStroop(contenedor, version, callback);
         });
     },
 
     iniciarTareaStroop: function (contenedor, version, callback) {
         tareaStroop.iniciar(contenedor, version, (respuestasStroop) => {
             this.respuestasStroop[version] = respuestasStroop;  // Guardar las respuestas de Stroop
-            if (version < 3) {
-                this.mostrarInstrucciones(contenedor, version + 1, callback);  // Asegurar que el callback se pase
+
+            const siguienteIndiceVersion = this.versionesOrdenadas.indexOf(version) + 1;
+
+            if (siguienteIndiceVersion < this.versionesOrdenadas.length) {
+                this.mostrarInstrucciones(contenedor, siguienteIndiceVersion, callback);  // Pasar al siguiente índice en el orden aleatorio
             } else {
                 this.audio.pause();
-                this.mostrarMensajeFinalizacion(contenedor);  // Mostrar el mensaje de finalización en lugar de alert                if (callback) callback('finalizar');  // Asegurar que el callback esté definido
+                if (callback) callback('finalizar');  // Asegurar que el callback esté definido
                 this.guardarResultados();  // Guardar resultados al finalizar todas las tareas
             }
         });
-    },
-    
-    mostrarMensajeFinalizacion: function (contenedor) {
-        contenedor.innerHTML = `
-            <h2>Tareas Completadas</h2>
-            <p class="pregunta">Las tareas cognitivas han finalizado. Gracias por participar.</p>
-        `;
     },
 
     guardarResultados: function () {
@@ -91,32 +96,37 @@ const tareasCognitivas = {
             memoria: this.respuestasMemoria,
             stroop: this.respuestasStroop
         };
-
+    
+        const estimulos = ["Música instrumental", "Música con letra", "Ruido blanco"];
+        
         let contenidoTxt = "Resultados de las tareas cognitivas:\n\n";
-
+    
         contenidoTxt += "Tarea de Memoria:\n";
         for (const [version, respuestasMemoria] of Object.entries(respuestas.memoria)) {
-            contenidoTxt += `Versión ${version}:\n`;
+            const estimulo = estimulos[version - 1];
+            contenidoTxt += `Estímulo: ${estimulo}\n`;
             respuestasMemoria.forEach((respuesta, index) => {
                 contenidoTxt += `Palabra ${index + 1}: ${respuesta}\n`;
             });
             contenidoTxt += "\n";
         }
-
+    
         contenidoTxt += "Tarea de Stroop:\n";
         for (const [version, respuestasStroop] of Object.entries(respuestas.stroop)) {
-            contenidoTxt += `Versión ${version}:\n`;
+            const estimulo = estimulos[version - 1];
+            contenidoTxt += `Estímulo: ${estimulo}\n`;
             respuestasStroop.forEach((respuesta, index) => {
                 const [palabra, color, respuestaUsuario] = respuesta;
                 contenidoTxt += `Palabra ${index + 1}: ${palabra} (Color: ${color}, Respuesta: ${respuestaUsuario})\n`;
             });
             contenidoTxt += "\n";
         }
-
+    
         const blob = new Blob([contenidoTxt], { type: 'text/plain' });
         const enlaceDescarga = document.createElement('a');
         enlaceDescarga.href = URL.createObjectURL(blob);
         enlaceDescarga.download = 'resultados_tareas_cognitivas.txt';
         enlaceDescarga.click();
     }
+    
 };

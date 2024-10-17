@@ -1,5 +1,6 @@
 // modules/questionarioCBP.js
 
+
 const questionarioCBP = {
     cargar: function (contenedor, callback) {
         let indicePregunta = 0;
@@ -87,7 +88,15 @@ const questionarioCBP = {
 
         function calcularResultados() {
             guardarRespuestasYResultados();
-            callback('preguntasEstimulo'); // Finaliza el test y prepara el siguiente módulo
+            document.removeEventListener("keydown", manejarEnter); // Eliminar evento Enter
+            callback('preguntasEstimulo');
+        }
+
+        function manejarEnter(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                document.getElementById("btn-siguiente").click();
+            }
         }
 
         function mostrarInstruccionInicial() {
@@ -109,7 +118,7 @@ const questionarioCBP = {
         }
 
         function mostrarPregunta() {
-            const respuestaAnterior = respuestas[indicePregunta]; // Obtener la respuesta previa si existe
+            const respuestaAnterior = respuestas[indicePregunta];
             contenedor.innerHTML = `
                 <h2>Test de Personalidad</h2>
                 <p class="pregunta">${preguntas[indicePregunta]}</p>
@@ -130,6 +139,8 @@ const questionarioCBP = {
             const btnSiguiente = document.getElementById("btn-siguiente");
             const btnAnterior = document.getElementById("btn-anterior");
             const mensajeError = document.getElementById("error-message");
+
+            document.addEventListener("keydown", manejarEnter); // Añadir evento Enter al mostrar cada pregunta
 
             btnSiguiente.addEventListener("click", () => {
                 const form = document.getElementById("form-respuesta");
@@ -158,6 +169,6 @@ const questionarioCBP = {
             });
         }
 
-        mostrarInstruccionInicial(); // Mostrar la instrucción al iniciar
+        mostrarInstruccionInicial();
     }
 };

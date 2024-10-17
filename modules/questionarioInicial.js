@@ -14,6 +14,7 @@ const questionarioInicial = {
 
         let index = 0;
         const respuestas = {};
+        let enterEvent = null;
 
         function mostrarPregunta() {
             contenedor.innerHTML = ''; // Limpiar contenedor
@@ -31,7 +32,6 @@ const questionarioInicial = {
                 select.innerHTML = `<option value="">Selecciona una opción</option>` + 
                     pregunta.opciones.map(opcion => `<option value="${opcion}">${opcion}</option>`).join('');
 
-                // Seleccionar la opción guardada previamente
                 if (respuestas[pregunta.texto]) {
                     select.value = respuestas[pregunta.texto];
                 }
@@ -51,14 +51,14 @@ const questionarioInicial = {
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.value = opcion;
-                    checkbox.checked = respuestas[pregunta.texto].includes(opcion); // Mantener estado
+                    checkbox.checked = respuestas[pregunta.texto].includes(opcion);
                     checkbox.addEventListener('change', () => {
                         if (checkbox.checked) {
                             if (!respuestas[pregunta.texto].includes(opcion)) {
-                                respuestas[pregunta.texto].push(opcion); // Añadir opción
+                                respuestas[pregunta.texto].push(opcion);
                             }
                         } else {
-                            respuestas[pregunta.texto] = respuestas[pregunta.texto].filter(item => item !== opcion); // Remover opción
+                            respuestas[pregunta.texto] = respuestas[pregunta.texto].filter(item => item !== opcion);
                         }
                         if (opcion === "Otros") {
                             if (checkbox.checked) {
@@ -77,7 +77,7 @@ const questionarioInicial = {
             } else {
                 const input = document.createElement('input');
                 input.type = 'text';
-                input.value = respuestas[pregunta.texto] || ''; // Mantener la respuesta previa
+                input.value = respuestas[pregunta.texto] || '';
                 input.addEventListener('input', () => {
                     respuestas[pregunta.texto] = input.value;
                 });
@@ -101,15 +101,19 @@ const questionarioInicial = {
             btnSiguiente.textContent = index === preguntas.length - 1 ? 'Finalizar' : 'Siguiente';
             btnSiguiente.addEventListener('click', () => {
                 if (!validarRespuesta(pregunta.texto)) {
-                    mensajeError.style.display = 'block'; // Mostrar mensaje de error si no está completada la pregunta
+                    mensajeError.style.display = 'block';
                     return;
                 }
-                mensajeError.style.display = 'none'; // Ocultar mensaje si está correcta
+                mensajeError.style.display = 'none';
 
                 if (index < preguntas.length - 1) {
                     index++;
                     mostrarPregunta();
                 } else {
+                    // Remover el evento "Enter" antes de cambiar de módulo
+                    if (enterEvent) {
+                        document.removeEventListener('keydown', enterEvent);
+                    }
                     guardarRespuestas();
                     callback('personalidad');
                 }
@@ -119,6 +123,17 @@ const questionarioInicial = {
             preguntaDiv.appendChild(mensajeError);
             preguntaDiv.appendChild(botonesDiv);
             contenedor.appendChild(preguntaDiv);
+
+            if (enterEvent) {
+                document.removeEventListener('keydown', enterEvent);
+            }
+
+            enterEvent = function(event) {
+                if (event.key === 'Enter') {
+                    btnSiguiente.click();
+                }
+            };
+            document.addEventListener('keydown', enterEvent);
         }
 
         function mostrarCampoOtro(contenedor, preguntaTexto) {
@@ -142,20 +157,19 @@ const questionarioInicial = {
         function validarRespuesta(preguntaTexto) {
             const respuesta = respuestas[preguntaTexto];
             if (preguntas[index].opcionesMultiples) {
-                // Validar que al menos una opción esté seleccionada
                 if (!respuesta || respuesta.length === 0) {
                     return false;
                 }
                 if (respuesta.includes("Otros") && !respuestas[preguntaTexto + '_otro']) {
-                    return false; // Validar si seleccionó "Otros" pero no especificó
+                    return false;
                 }
                 return true;
             }
             if (!respuesta || (Array.isArray(respuesta) && respuesta.length === 0)) {
-                return false; // No permitir avanzar si no hay respuesta o si el array está vacío
+                return false;
             }
             if (respuesta === "Otro" && !respuestas[preguntaTexto + '_otro']) {
-                return false; // Validar si seleccionó "Otro" pero no especificó
+                return false;
             }
             return true;
         }
@@ -174,6 +188,6 @@ const questionarioInicial = {
             enlace.click();
         }
 
-        mostrarPregunta(); // Mostrar la primera pregunta al cargar
+        mostrarPregunta();
     }
 };

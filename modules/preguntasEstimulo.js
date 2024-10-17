@@ -2,11 +2,20 @@
 
 const preguntasEstimulo = {
     cargar: function (contenedor, mostrarTareas) {
-        const estimulos = [
+        let estimulos = [
             { nombre: "Música instrumental", archivo: "assets/musica_instrumental.mp3" },
             { nombre: "Música con letra", archivo: "assets/musica_con_letra.mp3" },
             { nombre: "Ruido blanco", archivo: "assets/ruido_blanco.mp3" }
         ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]]; // Intercambiar los elementos
+            }
+        }
+
+        shuffleArray(estimulos);
 
         const preguntas = [
             "¿Te pareció molesto este estímulo?",
@@ -27,6 +36,14 @@ const preguntasEstimulo = {
             enlace.href = URL.createObjectURL(blob);
             enlace.download = 'respuestas_estimulos.txt';
             enlace.click();
+        }
+
+        function manejarTeclaEnter(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                const btnSiguiente = document.getElementById("btn-siguiente");
+                if (btnSiguiente) btnSiguiente.click();
+            }
         }
 
         function mostrarPreguntasEstimulo() {
@@ -62,35 +79,34 @@ const preguntasEstimulo = {
                 }
                 mensajeError.style.display = 'none';
 
-                // Guardar respuesta
                 respuestasPreguntas[indicePreguntaEstimulo] = [preguntas[indicePreguntaEstimulo], respuesta];
 
                 if (indicePreguntaEstimulo < preguntas.length - 1) {
                     indicePreguntaEstimulo++;
                     mostrarPreguntasEstimulo();
                 } else {
-                    // Guardar respuestas del estímulo actual
                     guardarRespuestasEstimulo(estimulos[indiceEstimulo].nombre, respuestasPreguntas);
-                    respuestasPreguntas = []; // Reiniciar para el siguiente estímulo
+                    respuestasPreguntas = [];
                     indiceEstimulo++;
 
                     if (indiceEstimulo < estimulos.length) {
-                        // Mostrar botón para escuchar el siguiente estímulo
                         mostrarBotonEscucharSiguiente();
                     } else {
-                        audio.pause(); // Detener el audio al final
-                        mostrarMensajeFinal(); // Mostrar mensaje y botón para comenzar las tareas
+                        audio.pause();
+                        document.removeEventListener("keydown", manejarTeclaEnter); // Remover el evento "Enter"
+                        mostrarMensajeFinal();
                     }
                 }
             });
 
-            // Botón anterior
             btnAnterior.addEventListener("click", () => {
                 if (indicePreguntaEstimulo > 0) {
                     indicePreguntaEstimulo--;
                     mostrarPreguntasEstimulo();
                 }
             });
+
+            document.addEventListener("keydown", manejarTeclaEnter); // Agregar el evento "Enter"
         }
 
         function mostrarBotonEscucharSiguiente() {
@@ -99,15 +115,14 @@ const preguntasEstimulo = {
                 <button id="btn-escuchar">Escuchar ${estimulos[indiceEstimulo].nombre}</button>
             `;
 
-            // Pausar audio antes de comenzar un nuevo estímulo
             audio.pause();
 
             document.getElementById("btn-escuchar").addEventListener("click", () => {
                 audio.src = estimulos[indiceEstimulo].archivo;
                 audio.play();
-                indicePreguntaEstimulo = 0; // Reiniciar preguntas
-                respuestasPreguntas = []; // Reiniciar respuestas para el nuevo estímulo
-                mostrarPreguntasEstimulo(); // Mostrar las preguntas del siguiente estímulo
+                indicePreguntaEstimulo = 0;
+                respuestasPreguntas = [];
+                mostrarPreguntasEstimulo();
             });
         }
 
@@ -119,11 +134,10 @@ const preguntasEstimulo = {
             `;
 
             document.getElementById("btn-escuchar").addEventListener("click", () => {
-                mostrarTareas('tareasCognitivas'); // Pasar a tareasCognitivas
+                mostrarTareas('tareasCognitivas');
             });
         }
 
-        // Botón para comenzar a escuchar el primer estímulo
         mostrarBotonEscucharSiguiente();
     }
 };

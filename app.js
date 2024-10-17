@@ -30,8 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 cargarModulo(tareasCognitivas);
                 break;
             case 'finalizar':
-                alert("El experimento ha terminado. ¡Gracias por participar!");
-                appContainer.innerHTML = "<h2>Experimento finalizado.</h2>";
+                // alert("El experimento ha terminado. ¡Gracias por participar!");
+                appContainer.innerHTML = `
+                                        <h2>Experimento finalizado.</h2>
+                                        <p class="pregunta">Las tareas han finalizado. Gracias por participar.</p>
+                                        `;
                 break;
             default:
                 console.log("Cargando cuestionario inicial...");
