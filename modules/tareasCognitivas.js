@@ -34,7 +34,7 @@ const tareasCognitivas = {
 
         contenedor.innerHTML = `
             <h2>Tarea de Memoria</h2>
-            <p class="pregunta">Memoriza las palabras que aparecerán en la pantalla. Habrá un tiempo limitado para recordar. Al finalizar escribe todas las palabras que recuerdes separadas por espacio o por comas, no importa el orden.</p>
+            <p class="pregunta">Memoriza las palabras que verás. Luego escribe las que recuerdes, separadas por espacios. El orden no importa.</p>
             <button id="btn-comenzar-memoria">Comenzar Tarea de Memoria</button>
         `;
 
@@ -64,9 +64,7 @@ const tareasCognitivas = {
     mostrarInstruccionesStroop: function (contenedor, version, callback) {
         contenedor.innerHTML = `
             <h2>Tarea de Stroop</h2>
-            <p class="pregunta">En esta tarea, deberás indicar el color de la fuente en la que aparece cada palabra, no la palabra escrita. 
-            Puedes presionar Enter para enviar tu respuesta una vez que hayas escrito el color. 
-            Intenta escribir la mayor cantidad de respuestas correctas que puedas dentro del tiempo disponible. ¡Buena suerte!</p>
+            <p class="pregunta">En esta tarea, indica el color de la fuente, no la palabra. Presiona Enter para enviar. Responde tantas veces como puedas dentro del tiempo. ¡Buena suerte!</p>
             <button id="btn-comenzar-stroop">Comenzar Tarea de Stroop</button>
         `;
 

@@ -12,6 +12,7 @@ body {
     color: #333;
     line-height: 1.6;
     padding: 20px;
+    margin-top: 10rem;
 }
 
 h2, h3 {
@@ -169,4 +170,8 @@ div > label {
     font-size: 28px;
     font-weight: bold;
     -webkit-text-stroke: 0.5px black;
+}
+
+#timer {
+color: grey;
 }

@@ -18,10 +18,10 @@ const preguntasEstimulo = {
         shuffleArray(estimulos);
 
         const preguntas = [
-            "¿Te pareció molesto este estímulo?",
-            "¿Te resultó relajante?",
+            "¿Te parece molesto este estímulo?",
+            "¿Te resulta relajante?",
             "¿Sientes que este sonido te ayudaría a concentrarte en una tarea?",
-            "¿Te generó ansiedad o incomodidad?"
+            "¿Te genera ansiedad o incomodidad?"
         ];
 
         let indiceEstimulo = 0;
